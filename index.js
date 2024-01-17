@@ -658,9 +658,9 @@ ${description?`<div class="api-description">${description}</div>`:''}
 						}
 
 						if( req.headers.accept === 'application/json' ) {
-							res.end(JSON.stringify( { error: true, data: e.message, stack: e.stack } ) );
+							res.end(JSON.stringify( { error: true, data: e.message } ) );
 						} else {
-							res.end(e.message + '\n' + e.stack );
+							res.end(e.message);
 						}
 					} else if(!middlewareResult) {
 						if(res.destroyed || res.finished){
