@@ -639,13 +639,15 @@ ${description?`<div class="api-description">${description}</div>`:''}
 					} catch( e ) {
 						resultError = e;
 					}
-					try {
+					if (!resultError) {
+						try {
 
-						if( 'fn' in api ) {
-							result = await api.fn( args, req, res, next );
+							if( 'fn' in api ) {
+								result = await api.fn( args, req, res, next );
+							}
+						} catch( e ) {
+							resultError = e;
 						}
-					} catch( e ) {
-						resultError = e;
 					}
 					clearTimeout( timeout );
 
@@ -657,11 +659,21 @@ ${description?`<div class="api-description">${description}</div>`:''}
 							return console.log('ERR 14: Check write after end')
 						}
 
-						if( req.headers.accept === 'application/json' ) {
-							res.end(JSON.stringify( { error: true, data: e.message } ) );
+						if(process.env.TAPIR_DEBUG === 'TRUE') {
+							if( req.headers.accept === 'application/json' ) {
+								res.end(JSON.stringify( { error: true, data: e.message, stack: e.stack } ) );
+							} else {
+								res.end(e.message + '\n' + e.stack);
+							}
 						} else {
-							res.end(e.message);
+							if( req.headers.accept === 'application/json' ) {
+								res.end(JSON.stringify( { error: true, data: e.message } ) );
+							} else {
+								res.end(e.message);
+							}
 						}
+
+
 					} else if(!middlewareResult) {
 						if(res.destroyed || res.finished){
 							return console.log('ERR 17: Check write after end')
