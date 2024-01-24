@@ -659,6 +659,10 @@ ${description?`<div class="api-description">${description}</div>`:''}
 							return console.log('ERR 14: Check write after end')
 						}
 
+						if(!!e.statusCode) {
+							res.status(e.statusCode);
+						}
+
 						if(process.env.TAPIR_DEBUG === 'TRUE') {
 							if( req.headers.accept === 'application/json' ) {
 								res.end(JSON.stringify( { error: true, data: e.message, stack: e.stack } ) );
